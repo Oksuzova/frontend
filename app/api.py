@@ -23,6 +23,7 @@ from .logic import (
     find_post,
     add_like_to_post,
     remove_like_from_post,
+    all_users
 )
 
 api = APIRouter()
@@ -99,7 +100,7 @@ async def login(input: Annotated[LoginModel, Body()]) -> None:
     if not verify_password(input.username, input.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "My-Basic"},
         )
     return None
 
@@ -122,7 +123,7 @@ async def me(
     if auth_username is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "My-Basic"},
         )
     user = find_user(auth_username)
     assert user is not None
@@ -152,6 +153,16 @@ async def get_user(username: str, response: Response) -> UserModel:
         ]
     )
     return user
+
+@api.get(
+    "/users",
+    tags=["users"]
+)
+async def get_users(
+        auth_username: Annotated[Optional[str], Depends(authenticated_username)]) -> list[UserModel]:
+    """Returns users information"""
+    return all_users(auth_username)
+
 
 
 @api.get(
@@ -243,7 +254,7 @@ async def publish_post(
     if auth_username is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "My-Basic"},
         )
     if auth_username.lower() != username.lower():
         raise HTTPException(
@@ -330,7 +341,7 @@ async def like_post(
     if auth_username is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "My-Basic"},
         )
 
     post = find_post(username, post_id, current_username=auth_username)
@@ -378,7 +389,7 @@ async def unlike_post(
     if auth_username is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            headers={"WWW-Authenticate": "Basic"},
+            headers={"WWW-Authenticate": "My-Basic"},
         )
 
     post = find_post(username, post_id, current_username=auth_username)

@@ -28,6 +28,9 @@ class Database:
     def find_user(self, username: str) -> Optional[User]:
         return self._storage["users"].get(username)
 
+    def all_users(self) -> dict[User]:
+        return self._storage["users"]
+
     def save_user(self, key: str, user: User):
         self._storage["users"][key] = user
 

@@ -18,6 +18,10 @@ def is_username_available(username: str) -> bool:
 def _find_user(username: str) -> Optional[User]:
     return database.find_user(username.lower())
 
+def _all_users(exclude:str) -> dict[User]:
+    users = database.all_users().copy()
+    users.pop(exclude.lower()) if exclude else None
+    return users
 
 def find_user(username: str) -> Optional[UserModel]:
     user = _find_user(username)
@@ -28,6 +32,14 @@ def find_user(username: str) -> Optional[UserModel]:
         full_name=user.full_name,
         posts=len(user.posts),
     )
+
+def all_users(username: str) -> list[UserModel]:
+    users = _all_users(username)
+    return [UserModel(
+        username=v.username,
+        full_name=v.full_name,
+        posts=len(v.posts),
+    ) for _,v in users.items()]
 
 
 def create_user(input: CreateUserModel) -> UserModel:

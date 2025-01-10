@@ -42,7 +42,7 @@ def init():
     ]
     posts = [
         create_post(random.choice(users).username, CreatePostModel(content=text))
-        for text in texts
+        for text in texts + texts
     ]
     for _ in range(len(texts) * 2):
         add_like_to_post(random.choice(posts), random.choice(users).username)
@@ -54,7 +54,7 @@ init()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
